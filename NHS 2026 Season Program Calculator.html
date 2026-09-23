@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NHS 2026 Season Program Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --brown:#46230F; --brown-2:#6B3A1C; --gold:#F2B51C; --tan:#E8B46A; --olive:#9AA23A;
+  --bg:#FBF6EC; --panel:#FFFFFF; --panel-2:#F6ECD9; --line:#E6D6B8; --ink:#2E1A0C; --muted:#7A6450;
+  --accent-ink:#46230F; --good:#5F6A1C;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1C140D; --panel:#271C13; --panel-2:#33251A; --line:#4A3726; --ink:#F4E9D8; --muted:#BDA88F;
+    --accent-ink:#F2B51C; --good:#C3CB67; --brown-2:#E8B46A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1C140D; --panel:#271C13; --panel-2:#33251A; --line:#4A3726; --ink:#F4E9D8; --muted:#BDA88F;
+  --accent-ink:#F2B51C; --good:#C3CB67; --brown-2:#E8B46A;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* Brand band */
+.band{background:var(--tan);color:#46230F}
+.band-in{max-width:1080px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.brand{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.6rem;letter-spacing:.02em;line-height:1}
+.brand small{display:block;font-family:"Barlow",sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.04em;opacity:.8;margin-top:4px}
+.band-right{display:flex;gap:8px;align-items:center}
+.stripe{display:grid;grid-template-columns:52% 26% 22%;height:6px}
+.stripe span:nth-child(1){background:#46230F}.stripe span:nth-child(2){background:var(--gold)}.stripe span:nth-child(3){background:var(--olive)}
+.btn{border:2px solid #46230F;background:transparent;color:#46230F;border-radius:6px;padding:6px 12px;font-weight:600;cursor:pointer}
+.btn:hover{background:#46230F;color:#F6ECD9}
+
+main{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
+
+/* Hero: acreage */
+.hero{display:grid;grid-template-columns:1.15fr 1fr;gap:20px;align-items:stretch}
+.acre-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.acre-q{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.25rem;margin:0 0 6px;color:var(--brown-2)}
+.acre-row{display:flex;align-items:baseline;gap:12px;border-bottom:4px solid var(--gold);padding-bottom:4px}
+#acres{width:100%;min-width:0;border:0;background:transparent;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:clamp(3.5rem,11vw,6rem);line-height:1;color:var(--accent-ink);padding:0}
+#acres:focus{outline:none}
+.acre-row:focus-within{border-bottom-color:var(--olive)}
+.acre-unit{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.8rem;color:var(--muted)}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:600;font-size:.9rem}
+.chip:hover{border-color:var(--brown-2)}
+.field-name{margin-top:16px;display:flex;flex-direction:column;gap:4px;font-size:.9rem;color:var(--muted)}
+.field-name input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;color:var(--ink)}
+
+.opts{margin-top:18px;display:grid;gap:14px}
+.seg{display:grid;grid-template-columns:1fr 1fr;border:2px solid var(--brown-2);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:10px;font-weight:700;cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-size:1.1rem}
+.seg button[aria-pressed="true"]{background:var(--brown-2);color:var(--bg)}
+.toggle{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border-radius:10px;padding:12px}
+.toggle input{width:20px;height:20px;accent-color:#9AA23A;margin-top:2px;flex:none}
+.toggle b{display:block}
+.toggle span{font-size:.9rem;color:var(--muted)}
+
+.total-card{background:#46230F;color:#F6ECD9;border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px}
+.total-card .lbl{font-weight:600;opacity:.85}
+.big{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:clamp(2.8rem,8vw,4.4rem);line-height:1;color:var(--gold)}
+.per{font-size:1rem;opacity:.9}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-top:1px solid rgba(246,236,217,.25);padding-top:14px}
+.split div{font-size:.9rem;opacity:.9}
+.split strong{display:block;font-family:"Barlow Condensed",sans-serif;font-size:1.5rem;font-weight:700;opacity:1}
+.compare{font-size:.9rem;background:rgba(246,236,217,.08);border-radius:8px;padding:10px 12px}
+
+/* Sections */
+section{margin-top:40px}
+.sec-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--gold);padding-bottom:6px;margin-bottom:16px}
+.sec-h h2{margin:0;font-size:1.8rem;font-weight:800;color:var(--accent-ink);line-height:1.1}
+.sec-h p{margin:0;color:var(--muted);font-size:.95rem}
+
+/* Timeline */
+.timeline{list-style:none;margin:0;padding:0;display:grid;gap:14px}
+.pass{display:grid;grid-template-columns:56px 1fr;gap:0 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+.pass.optional{border:2px dashed var(--gold);background:transparent}
+.pass.off{opacity:.5}
+.num{width:44px;height:44px;border-radius:50%;background:#46230F;color:var(--gold);display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.4rem}
+.optional .num{background:var(--gold);color:#46230F}
+.pass-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.pass h3{margin:0;font-size:1.5rem;font-weight:700;line-height:1.1}
+.when{color:var(--muted);font-size:.95rem;margin-top:2px}
+.pass-cost{text-align:right}
+.pass-cost .c{font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.8rem;line-height:1;color:var(--accent-ink)}
+.pass-cost .pa{font-size:.85rem;color:var(--muted)}
+.prod-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.95rem}
+.prod-table th{text-align:left;font-weight:600;color:var(--muted);font-size:.8rem;border-bottom:1px solid var(--line);padding:4px 8px 4px 0}
+.prod-table td{padding:8px 8px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+.prod-table td.n,.prod-table th.n{text-align:right}
+.how{margin-top:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.how div{background:var(--panel-2);border-radius:8px;padding:10px 12px;font-size:.92rem}
+.how b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:1.05rem}
+.opt-note{grid-column:2;font-size:.9rem;color:var(--muted);margin-top:10px}
+.wrap-x{overflow-x:auto}
+
+/* Order table */
+.order{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:.95rem}
+.order th{background:var(--panel-2);text-align:left;padding:10px 12px;font-weight:600;font-size:.85rem;color:var(--muted)}
+.order td{padding:12px;border-top:1px solid var(--line);vertical-align:top}
+.order .n{text-align:right;white-space:nowrap}
+.order tfoot td{font-weight:700;background:var(--panel-2)}
+.pack{font-size:.88rem;color:var(--muted)}
+.pack b{color:var(--ink)}
+
+/* Settings */
+details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin-top:14px}
+summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.3rem;color:var(--accent-ink)}
+.grid-in{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:14px}
+.grid-in label{display:flex;flex-direction:column;gap:4px;font-size:.88rem;color:var(--muted)}
+.grid-in input{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 10px;color:var(--ink);width:100%}
+.hint{font-size:.85rem;color:var(--muted);margin:10px 0 0}
+.reset{margin-top:12px;border:1px solid var(--line);background:var(--panel-2);border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:600}
+
+.notes{margin-top:36px;font-size:.85rem;color:var(--muted);border-top:2px solid var(--brown-2);padding-top:12px}
+
+@media (max-width:760px){
+  .hero{grid-template-columns:1fr}
+  .pass{grid-template-columns:1fr}
+  .num{margin-bottom:10px}
+  .opt-note{grid-column:1}
+  .pass-cost{text-align:left}
+}
+@media print{
+  @page{margin:0.5in}
+  :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel-2:#F6ECD9;--ink:#000;--line:#CBB894;--muted:#5A4634;--accent-ink:#46230F;--brown-2:#6B3A1C;padding:0}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .total-card{background:#fff!important;color:#000!important;border:2px solid #46230F}
+  .total-card .big{color:#46230F!important}
+  .split{border-top-color:#CBB894!important}
+  .compare{background:#F6ECD9!important}
+  .acre-card .hint,.field-name{display:none}
+  section,.order tr{break-inside:avoid}
+  .band-right,.quick,details,.reset{display:none!important}
+  .hero{grid-template-columns:1fr 1fr}
+  .pass{break-inside:avoid}
+  body{font-size:12px}
+}
+@media (prefers-reduced-motion:no-preference){
+  .flash{animation:flash .5s ease}
+  @keyframes flash{from{color:#fff}to{}}
+}
+</style>
+</head>
+<body>
+
+<header class="band">
+  <div class="band-in">
+    <div class="brand">Natural Heartland Solutions<small>2026 season program calculator</small></div>
+    <div class="band-right">
+      <button class="btn" id="printBtn" type="button">Print plan</button>
+    </div>
+  </div>
+  <div class="stripe" aria-hidden="true"><span></span><span></span><span></span></div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="acre-card">
+      <label class="acre-q" for="acres">How many acres are you treating?</label>
+      <div class="acre-row">
+        <input id="acres" type="number" inputmode="decimal" min="0" step="1" value="160" aria-describedby="acreHelp">
+        <span class="acre-unit">acres</span>
+      </div>
+      <div class="quick" id="quick" aria-label="Common field sizes">
+        <button class="chip" type="button" data-a="40">40</button>
+        <button class="chip" type="button" data-a="80">80</button>
+        <button class="chip" type="button" data-a="160">160</button>
+        <button class="chip" type="button" data-a="320">320</button>
+        <button class="chip" type="button" data-a="640">640</button>
+      </div>
+      <p id="acreHelp" class="hint">Type any number of acres. Everything below updates as you type.</p>
+
+      <div class="opts">
+        <div class="seg" role="group" aria-label="Program">
+          <button type="button" id="progConv" aria-pressed="true">Conventional</button>
+          <button type="button" id="progOrg" aria-pressed="false">OMRI Organic</button>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="leaf">
+          <div><b>Include leaf disease treatment</b><span>Optional pass, only applied if disease pressure shows up. Leave off to see the base program.</span></div>
+        </label>
+      </div>
+
+      <label class="field-name">Field or grower name (shows on printout)
+        <input id="fieldName" type="text" placeholder="e.g. North 160, Smith Farms">
+      </label>
+    </div>
+
+    <div class="total-card" aria-live="polite">
+      <div class="lbl" id="totLabel">Season program, 160 acres</div>
+      <div class="big" id="totBig">$4,264</div>
+      <div class="per" id="totPer">$26.65 per acre · three applications</div>
+      <div class="split">
+        <div>Base program<strong id="sBase">$4,264</strong></div>
+        <div>Leaf disease pass<strong id="sLeaf">$960</strong><span id="sLeafNote">if needed</span></div>
+      </div>
+      <div class="compare" id="compare"></div>
+    </div>
+  </div>
+
+  <section>
+    <div class="sec-h">
+      <h2>Your application plan</h2>
+      <p>What goes on, when, how, and how much to have on hand.</p>
+    </div>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+
+  <section>
+    <div class="sec-h">
+      <h2>Product order list</h2>
+      <p>Totals for the whole season, combined across passes.</p>
+    </div>
+    <div class="wrap-x">
+      <table class="order">
+        <thead><tr><th>Product</th><th class="n">Gallons needed</th><th class="n">Bulk cost ($/gal)</th><th>Cheapest pack mix at retail</th></tr></thead>
+        <tbody id="orderBody"></tbody>
+        <tfoot><tr><td>Total</td><td class="n" id="oGal"></td><td class="n" id="oBulk"></td><td id="oPack"></td></tr></tfoot>
+      </table>
+    </div>
+    <p class="hint">Bulk cost uses the retail $/gal price, which is what the grower program sheets are built on. The pack mix prices the same gallons in 2.5 gal jugs, 5 gal pails and 250 gal totes and picks the lowest-cost combination, which can leave some product over.</p>
+  </section>
+
+  <section>
+    <div class="sec-h"><h2>Adjust rates and equipment</h2><p>Defaults match the 2026 grower program sheets.</p></div>
+
+    <details>
+      <summary>Equipment and carrier volume</summary>
+      <div class="grid-in">
+        <label>Sprayer tank size (gal)<input type="number" min="1" id="sprTank" value="1000"></label>
+        <label>Planter liquid tank (gal)<input type="number" min="1" id="plTank" value="300"></label>
+        <label>Residue broadcast carrier (gal/acre)<input type="number" min="0.5" step="0.5" id="gpaRes" value="15"></label>
+        <label>In-furrow carrier (gal/acre)<input type="number" min="0.5" step="0.5" id="gpaFur" value="5"></label>
+        <label>Foliar carrier (gal/acre)<input type="number" min="0.5" step="0.5" id="gpaFol" value="15"></label>
+      </div>
+      <p class="hint">These are placeholders for your own rig. Set them to your actual tank sizes and calibrated spray volumes, and follow product labels for minimum carrier volume and mixing order.</p>
+    </details>
+
+    <details>
+      <summary>Product rates (fl oz per acre)</summary>
+      <div class="grid-in" id="rateInputs"></div>
+      <p class="hint">Label ranges from the Terra price guide are shown for each product. 128 fl oz = 1 gal, 32 fl oz = 1 qt.</p>
+      <button class="reset" type="button" id="resetRates">Reset to program rates</button>
+    </details>
+  </section>
+
+  <p class="notes">Pricing follows the Terra Transitional Solutions 2026 retail price guide in U.S. dollars. Prices are subject to change; contact Natural Heartland Solutions to lock in your season program. Application timing may shift with weather and crop stage.</p>
+</main>
+
+<script>
+(function(){
+  // Retail prices: [2.5 gal jug, 5 gal pail, $/gal, 250 gal tote]
+  const PRODUCTS = {
+    bio:  {name:"BioMentum",                         price:[66.00,126.00,24.00,6000.00],   range:"8–64 oz"},
+    abcC: {name:"ABC Soil Health (Conventional)",    price:[43.50,81.00,15.00,3750.00],    range:"3 qt in-furrow"},
+    abcO: {name:"ABC Soil Health (OMRI Organic)",    price:[44.18,82.35,15.27,3817.50],    range:"3 qt in-furrow"},
+    rdC:  {name:"Residue Digester (Conventional)",   price:[49.25,92.50,17.30,4325.00],    range:"2 qt"},
+    rdO:  {name:"Residue Digester (OMRI Organic)",   price:[49.75,93.50,17.50,4375.00],    range:"2 qt"},
+    pf:   {name:"Foliar Pak (Particle Foliar)",      price:[66.00,126.00,24.00,4125.00],   range:"2 qt–2 gal"}
+  };
+
+  const DEFAULT_RATES = {rd:64, abcPlant:96, bioFol:16, abcFol:32, bioLeaf:16, pf:16};
+  const RATE_LABELS = {
+    rd:["Residue Digester, pass 1","rd"], abcPlant:["ABC Soil Health, pass 2","abc"],
+    bioFol:["BioMentum, pass 3","bio"], abcFol:["ABC, pass 3 tank mix","abc"],
+    bioLeaf:["BioMentum, leaf disease pass","bio"], pf:["Foliar Pak, leaf disease pass","pf"]
+  };
+  let rates = {...DEFAULT_RATES};
+  let organic = false;
+
+  const $ = id => document.getElementById(id);
+  const money = (n,d=2) => "$"+n.toLocaleString("en-US",{minimumFractionDigits:d,maximumFractionDigits:d});
+  const money0 = n => money(Math.round(n),0);
+  const gal = n => n.toLocaleString("en-US",{minimumFractionDigits:n<10?2:1,maximumFractionDigits:n<10?2:1});
+  const num = (id,fb) => { const v=parseFloat($(id).value); return isFinite(v)&&v>0?v:fb; };
+  const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const ozText = oz => {
+    if (oz>=128 && oz%128===0) return (oz/128)+" gal";
+    if (oz%32===0) return (oz/32)+" qt ("+oz+" oz)";
+    return oz+" oz";
+  };
+
+  function passes(isOrg){
+    const rd = isOrg?"rdO":"rdC", abc = isOrg?"abcO":"abcC";
+    return [
+      {id:1, title:"Residue digestion", when:"Fall after harvest or spring before tillage/planting",
+       how:"Broadcast over crop residue", equip:"spr", gpa:"gpaRes",
+       items:[{p:rd, r:"rd"}]},
+      {id:2, title:"Planting", when:"At planting",
+       how:"In-furrow application through the planter", equip:"pl", gpa:"gpaFur",
+       items:[{p:abc, r:"abcPlant"}]},
+      {id:3, title:"Foliar feed", when:"V3–V5 through R1 growth stage",
+       how:"Tank mix both products, one foliar pass", equip:"spr", gpa:"gpaFol",
+       items:[{p:"bio", r:"bioFol"},{p:abc, r:"abcFol", label:isOrg?"ABC Organic":"ABC Conventional"}]},
+      {id:4, title:"Leaf disease treatment", when:"Only if leaf disease pressure shows up later in the season",
+       how:"Tank mix both products, one foliar pass", equip:"spr", gpa:"gpaFol", optional:true,
+       items:[{p:"bio", r:"bioLeaf"},{p:"pf", r:"pf"}]}
+    ];
+  }
+
+  function perAcre(item){ return rates[item.r]/128 * PRODUCTS[item.p].price[2]; }
+  function passPerAcre(ps){ return ps.items.reduce((s,i)=>s+perAcre(i),0); }
+
+  function baseTotals(isOrg){
+    const ps = passes(isOrg);
+    return {base: ps.filter(p=>!p.optional).reduce((s,p)=>s+passPerAcre(p),0),
+            leaf: passPerAcre(ps.find(p=>p.optional))};
+  }
+
+  // Cheapest mix of totes / 5 gal / 2.5 gal covering g gallons
+  function bestPack(g, price){
+    const [p25,p5,,pt] = price;
+    if (g<=0) return {cost:0,t:0,f:0,j:0,vol:0};
+    let best=null;
+    const maxT = Math.ceil(g/250);
+    for (let t=0;t<=maxT;t++){
+      const rem1 = Math.max(0,g-250*t);
+      const maxF = Math.ceil(rem1/5);
+      for (let f=0;f<=maxF;f++){
+        const rem2 = Math.max(0,rem1-5*f);
+        const j = Math.ceil(rem2/2.5 - 1e-9);
+        const cost = t*pt+f*p5+j*p25;
+        if (!best || cost<best.cost-1e-9) best={cost,t,f,j,vol:t*250+f*5+j*2.5};
+      }
+    }
+    return best;
+  }
+
+  function render(){
+    const acres = Math.max(0, parseFloat($("acres").value)||0);
+    const leafOn = $("leaf").checked;
+    const ps = passes(organic);
+    const tanks = {spr:num("sprTank",1000), pl:num("plTank",300)};
+
+    // Totals
+    const t = baseTotals(organic);
+    const perA = t.base + (leafOn?t.leaf:0);
+    const fname=$("fieldName").value.trim();
+    $("totLabel").textContent = (fname?fname+": ":"")+(leafOn?"Season total with leaf disease pass, ":"Season program, ") + acres.toLocaleString("en-US")+" acres";
+    $("totBig").textContent = money0(perA*acres);
+    $("totPer").textContent = money(perA)+" per acre · "+(leafOn?"four":"three")+" applications";
+    $("sBase").textContent = money0(t.base*acres);
+    $("sLeaf").textContent = money0(t.leaf*acres);
+    $("sLeafNote").textContent = leafOn?"included above":"not included, only if needed";
+
+    const other = baseTotals(!organic);
+    const diff = (other.base - t.base)*acres;
+    $("compare").textContent = acres>0
+      ? "The "+(organic?"conventional":"OMRI organic")+" program on the same acres would be "+money0(Math.abs(diff))+(diff>=0?" more":" less")+" ("+money(other.base)+"/acre base)."
+      : "Enter your acres to see the comparison between programs.";
+
+    // Timeline
+    const tl = $("timeline"); tl.innerHTML="";
+    const need = {};
+    ps.forEach(pass=>{
+      const active = !pass.optional || leafOn;
+      const pa = passPerAcre(pass);
+      const tank = tanks[pass.equip];
+      const gpa = num(pass.gpa, 10);
+      const apl = tank/gpa;
+      const loads = acres>0 ? Math.ceil(acres/apl - 1e-9) : 0;
+      const lastAcres = acres>0 ? acres - (loads-1)*apl : 0;
+
+      let rows="";
+      pass.items.forEach(it=>{
+        const g = rates[it.r]/128*acres;
+        if (active){ need[it.p]=(need[it.p]||0)+g; }
+        rows += "<tr><td>"+(it.label||PRODUCTS[it.p].name)+"</td><td>"+ozText(rates[it.r])+"/acre</td><td class='n'>"+gal(g)+" gal</td><td class='n'>"+money(perAcre(it))+"</td><td class='n'>"+money0(perAcre(it)*acres)+"</td></tr>";
+      });
+
+      const prodPerLoad = pass.items.map(it=>"<b>"+gal(rates[it.r]/128*Math.min(apl,acres||apl))+" gal</b> "+(it.label||PRODUCTS[it.p].name.split(" (")[0])).join(" + ");
+      const prodGalPerLoad = pass.items.reduce((s,it)=>s+rates[it.r]/128*Math.min(apl,acres||apl),0);
+      const fullLoadAcres = Math.min(apl, acres||apl);
+      const fillTo = fullLoadAcres*gpa;
+      const equipName = pass.equip==="pl"?"planter tank":"sprayer";
+
+      const li = document.createElement("li");
+      li.className = "pass"+(pass.optional?" optional":"")+(active?"":" off");
+      li.innerHTML =
+        "<div class='num' aria-hidden='true'>"+(pass.optional?"+":pass.id)+"</div>"+
+        "<div>"+
+          "<div class='pass-top'><div><h3>"+(pass.optional?"Optional: ":"")+pass.title+"</h3><div class='when'>"+pass.when+"</div></div>"+
+          "<div class='pass-cost'><div class='c'>"+money0(pa*acres)+"</div><div class='pa'>"+money(pa)+" per acre</div></div></div>"+
+          "<div class='wrap-x'><table class='prod-table'><thead><tr><th>Product</th><th>Rate</th><th class='n'>Total needed</th><th class='n'>Per acre</th><th class='n'>Pass cost</th></tr></thead><tbody>"+rows+"</tbody></table></div>"+
+          "<div class='how'>"+
+            "<div><b>How</b>"+pass.how+" at "+gpa+" gal/acre total volume.</div>"+
+            "<div><b>Per "+equipName+" load</b>Covers "+gal(fullLoadAcres)+" acres. Add "+prodPerLoad+", then water to "+gal(fillTo)+" gal (about "+gal(Math.max(0,fillTo-prodGalPerLoad))+" gal water).</div>"+
+            "<div><b>Loads for this pass</b>"+(acres>0?(loads+" load"+(loads===1?"":"s")+(loads>1&&lastAcres<apl-0.01?", last load covers "+gal(lastAcres)+" acres":"")):"Enter acres")+".</div>"+
+          "</div>"+
+        "</div>"+
+        (pass.optional&&!active?"<p class='opt-note'>Turn on “Include leaf disease treatment” to add this pass to your totals and order list.</p>":"");
+      tl.appendChild(li);
+    });
+
+    // Order list
+    const body = $("orderBody"); body.innerHTML="";
+    let tg=0,tb=0,tp=0;
+    Object.keys(need).forEach(k=>{
+      const g = need[k]; if (g<=0) return;
+      const P = PRODUCTS[k];
+      const bulk = g*P.price[2];
+      const pk = bestPack(g,P.price);
+      tg+=g; tb+=bulk; tp+=pk.cost;
+      const parts=[];
+      if (pk.t) parts.push(pk.t+" × 250 gal tote");
+      if (pk.f) parts.push(pk.f+" × 5 gal");
+      if (pk.j) parts.push(pk.j+" × 2.5 gal");
+      const left = pk.vol-g;
+      body.insertAdjacentHTML("beforeend",
+        "<tr><td>"+P.name+"</td><td class='n'>"+gal(g)+"</td><td class='n'>"+money(bulk)+"</td>"+
+        "<td class='pack'><b>"+money(pk.cost)+"</b> · "+parts.join(" + ")+(left>0.01?" ("+gal(left)+" gal left over)":"")+"</td></tr>");
+    });
+    if (!body.children.length) body.innerHTML="<tr><td colspan='4'>Enter your treated acres above to build the order list.</td></tr>";
+    $("oGal").textContent = gal(tg);
+    $("oBulk").textContent = money(tb);
+    $("oPack").textContent = tp?money(tp)+" in packs":"";
+  }
+
+  // Rate inputs
+  function buildRateInputs(){
+    const wrap = $("rateInputs"); wrap.innerHTML="";
+    Object.keys(DEFAULT_RATES).forEach(k=>{
+      const [label,pk] = RATE_LABELS[k];
+      const range = pk==="rd"?PRODUCTS.rdC.range:pk==="abc"?PRODUCTS.abcC.range:PRODUCTS[pk].range;
+      const l = document.createElement("label");
+      l.innerHTML = esc(label)+" <span>(label: "+range+")</span><input type='number' min='0' step='1' data-k='"+k+"' value='"+rates[k]+"'>";
+      wrap.appendChild(l);
+    });
+    wrap.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",e=>{
+      const v=parseFloat(e.target.value); rates[e.target.dataset.k]= isFinite(v)&&v>=0?v:0; render();
+    }));
+  }
+
+  // Wire up
+  $("acres").addEventListener("input",render);
+  $("leaf").addEventListener("change",render);
+  ["sprTank","plTank","gpaRes","gpaFur","gpaFol"].forEach(id=>$(id).addEventListener("input",render));
+  $("quick").addEventListener("click",e=>{const b=e.target.closest("[data-a]"); if(!b)return; $("acres").value=b.dataset.a; render();});
+  function setProg(org){organic=org; $("progConv").setAttribute("aria-pressed",String(!org)); $("progOrg").setAttribute("aria-pressed",String(org)); render();}
+  $("progConv").addEventListener("click",()=>setProg(false));
+  $("progOrg").addEventListener("click",()=>setProg(true));
+  $("resetRates").addEventListener("click",()=>{rates={...DEFAULT_RATES}; buildRateInputs(); render();});
+  $("printBtn").addEventListener("click",()=>window.print());
+  $("fieldName").addEventListener("input",()=>{
+    const n=$("fieldName").value.trim();
+    document.title = (n?n+" · ":"")+"NHS 2026 Season Program"; render();
+  });
+
+  buildRateInputs();
+  render();
+})();
+</script>
+</body>
+</html>
