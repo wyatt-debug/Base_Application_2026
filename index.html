@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
 <title>NHS 2026 Season Program Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,26 +12,18 @@
 :root{
   --brown:#46230F; --brown-2:#6B3A1C; --gold:#F2B51C; --tan:#E8B46A; --olive:#9AA23A;
   --bg:#FBF6EC; --panel:#FFFFFF; --panel-2:#F6ECD9; --line:#E6D6B8; --ink:#2E1A0C; --muted:#7A6450;
-  --accent-ink:#46230F; --good:#5F6A1C;
+  --accent-ink:#46230F; --good:#5F6A1C; --gold-ink:#8F5A00;
+  color-scheme:only light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#1C140D; --panel:#271C13; --panel-2:#33251A; --line:#4A3726; --ink:#F4E9D8; --muted:#BDA88F;
-    --accent-ink:#F2B51C; --good:#C3CB67; --brown-2:#E8B46A;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#1C140D; --panel:#271C13; --panel-2:#33251A; --line:#4A3726; --ink:#F4E9D8; --muted:#BDA88F;
-  --accent-ink:#F2B51C; --good:#C3CB67; --brown-2:#E8B46A;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,-apple-system,"Segoe UI",sans-serif}
 h1,h2,h3,.cond{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
 button,input,select{font:inherit;color:inherit}
-:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+:focus-visible{outline:3px solid var(--gold-ink);outline-offset:2px}
+::placeholder{color:var(--muted);opacity:1}
 
 /* Brand band */
 .band{background:var(--tan);color:#46230F}
@@ -52,7 +45,7 @@ main{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
 .acre-row{display:flex;align-items:baseline;gap:12px;border-bottom:4px solid var(--gold);padding-bottom:4px}
 #acres{width:100%;min-width:0;border:0;background:transparent;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:clamp(3.5rem,11vw,6rem);line-height:1;color:var(--accent-ink);padding:0}
 #acres:focus{outline:none}
-.acre-row:focus-within{border-bottom-color:var(--olive)}
+.acre-row:focus-within{border-bottom-color:var(--gold-ink)}
 .acre-unit{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:1.8rem;color:var(--muted)}
 .quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
 .chip{border:1px solid var(--line);background:var(--panel-2);border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:600;font-size:.9rem}
@@ -65,7 +58,7 @@ main{max-width:1080px;margin:0 auto;padding:24px 20px 60px}
 .seg button{border:0;background:transparent;padding:10px;font-weight:700;cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-size:1.1rem}
 .seg button[aria-pressed="true"]{background:var(--brown-2);color:var(--bg)}
 .toggle{display:flex;gap:12px;align-items:flex-start;cursor:pointer;background:var(--panel-2);border-radius:10px;padding:12px}
-.toggle input{width:20px;height:20px;accent-color:#9AA23A;margin-top:2px;flex:none}
+.toggle input{width:20px;height:20px;accent-color:var(--good);margin-top:2px;flex:none}
 .toggle b{display:block}
 .toggle span{font-size:.9rem;color:var(--muted)}
 
@@ -87,8 +80,7 @@ section{margin-top:40px}
 /* Timeline */
 .timeline{list-style:none;margin:0;padding:0;display:grid;gap:14px}
 .pass{display:grid;grid-template-columns:56px 1fr;gap:0 16px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
-.pass.optional{border:2px dashed var(--gold);background:transparent}
-.pass.off{opacity:.5}
+.pass.optional{border:2px dashed var(--gold-ink);background:transparent}
 .num{width:44px;height:44px;border-radius:50%;background:#46230F;color:var(--gold);display:grid;place-items:center;font-family:"Barlow Condensed",sans-serif;font-weight:800;font-size:1.4rem}
 .optional .num{background:var(--gold);color:#46230F}
 .pass-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
@@ -136,7 +128,7 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
 }
 @media print{
   @page{margin:0.5in}
-  :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel-2:#F6ECD9;--ink:#000;--line:#CBB894;--muted:#5A4634;--accent-ink:#46230F;--brown-2:#6B3A1C;padding:0}
+  :root{--bg:#fff;--panel:#fff;--panel-2:#F6ECD9;--ink:#000;--line:#CBB894;--muted:#5A4634;--accent-ink:#46230F;--brown-2:#6B3A1C;padding:0}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .total-card{background:#fff!important;color:#000!important;border:2px solid #46230F}
   .total-card .big{color:#46230F!important}
