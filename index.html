@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>NHS 2026 Season Program Calculator</title>
+<title>NHS 2027 Season Program Calculator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -151,7 +151,7 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
 
 <header class="band">
   <div class="band-in">
-    <div class="brand">Natural Heartland Solutions<small>2026 season program calculator</small></div>
+    <div class="brand">Natural Heartland Solutions<small>2027 season program calculator</small></div>
     <div class="band-right">
       <button class="btn" id="printBtn" type="button">Print plan</button>
     </div>
@@ -194,11 +194,11 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
 
     <div class="total-card" aria-live="polite">
       <div class="lbl" id="totLabel">Season program, 160 acres</div>
-      <div class="big" id="totBig">$4,264</div>
-      <div class="per" id="totPer">$26.65 per acre · three applications</div>
+      <div class="big" id="totBig">$4,964</div>
+      <div class="per" id="totPer">$31.03 per acre · three applications</div>
       <div class="split">
-        <div>Base program<strong id="sBase">$4,264</strong></div>
-        <div>Leaf disease pass<strong id="sLeaf">$960</strong><span id="sLeafNote">if needed</span></div>
+        <div>Base program<strong id="sBase">$4,964</strong></div>
+        <div>Leaf disease pass<strong id="sLeaf">$1,020</strong><span id="sLeafNote">if needed</span></div>
       </div>
       <div class="compare" id="compare"></div>
     </div>
@@ -224,11 +224,11 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
         <tfoot><tr><td>Total</td><td class="n" id="oGal"></td><td class="n" id="oBulk"></td><td id="oPack"></td></tr></tfoot>
       </table>
     </div>
-    <p class="hint">Bulk cost uses the retail $/gal price, which is what the grower program sheets are built on. The pack mix prices the same gallons in 2.5 gal jugs, 5 gal pails and 250 gal totes and picks the lowest-cost combination, which can leave some product over.</p>
+    <p class="hint">Bulk cost uses the retail $/gal price, which is what the grower program sheets are built on. The pack mix prices the same gallons in 5 gal pails and picks the lowest-cost combination, which can leave some product over.</p>
   </section>
 
   <section>
-    <div class="sec-h"><h2>Adjust rates and equipment</h2><p>Defaults match the 2026 grower program sheets.</p></div>
+    <div class="sec-h"><h2>Adjust rates and equipment</h2><p>Defaults match the 2027 grower program sheets.</p></div>
 
     <details>
       <summary>Equipment and carrier volume</summary>
@@ -250,19 +250,21 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
     </details>
   </section>
 
-  <p class="notes">Pricing follows the Terra Transitional Solutions 2026 retail price guide in U.S. dollars. Prices are subject to change; contact Natural Heartland Solutions to lock in your season program. Application timing may shift with weather and crop stage.</p>
+  <p class="notes">Pricing follows the Terra Transitional Solutions 2027 retail price guide in U.S. dollars. Prices are subject to change; contact Natural Heartland Solutions to lock in your season program. Application timing may shift with weather and crop stage.</p>
 </main>
 
 <script>
 (function(){
-  // Retail prices: [2.5 gal jug, 5 gal pail, $/gal, 250 gal tote]
+  // Retail prices: [unused, 5 gal pail, bulk $/gal, unused]
+  // Index 2 stays bulk $/gal so per-acre math is unchanged.
+  // 2027 Terra retail: 2.5 gal jugs discontinued; 250 gal totes replaced by bulk per gallon.
   const PRODUCTS = {
-    bio:  {name:"BioMentum",                         price:[66.00,126.00,24.00,6000.00],   range:"8–64 oz"},
-    abcC: {name:"ABC Soil Health (Conventional)",    price:[43.50,81.00,15.00,3750.00],    range:"3 qt in-furrow"},
-    abcO: {name:"ABC Soil Health (OMRI Organic)",    price:[44.18,82.35,15.27,3817.50],    range:"3 qt in-furrow"},
-    rdC:  {name:"Residue Digester (Conventional)",   price:[49.25,92.50,17.30,4325.00],    range:"2 qt"},
-    rdO:  {name:"Residue Digester (OMRI Organic)",   price:[49.75,93.50,17.50,4375.00],    range:"2 qt"},
-    pf:   {name:"Foliar Pak (Particle Foliar)",      price:[66.00,126.00,24.00,4125.00],   range:"2 qt–2 gal"}
+    bio:  {name:"BioMentum",                         price:[0,141.09,27.00,0],   range:"8–64 oz"},
+    abcC: {name:"ABC Soil Health (Conventional)",    price:[0,101.09,19.00,0],   range:"3 qt in-furrow"},
+    abcO: {name:"ABC Soil Health (OMRI Organic)",    price:[0,113.29,21.44,0],   range:"3 qt in-furrow"},
+    rdC:  {name:"Residue Digester (Conventional)",   price:[0,92.59,17.30,0],    range:"2 qt"},
+    rdO:  {name:"Residue Digester (OMRI Organic)",   price:[0,93.59,17.50,0],    range:"2 qt"},
+    pf:   {name:"Foliar Pak (Particle Foliar)",      price:[0,126.09,24.00,0],   range:"2 qt–2 gal"}
   };
 
   const DEFAULT_RATES = {rd:64, abcPlant:96, bioFol:16, abcFol:32, bioLeaf:16, pf:16};
@@ -313,23 +315,13 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
             leaf: passPerAcre(ps.find(p=>p.optional))};
   }
 
-  // Cheapest mix of totes / 5 gal / 2.5 gal covering g gallons
+  // Cheapest 5 gal pail count covering g gallons.
+  // 2.5 gal jugs are discontinued. 250 gal volume is bulk $/gal (price index 2), not a tote SKU.
   function bestPack(g, price){
-    const [p25,p5,,pt] = price;
-    if (g<=0) return {cost:0,t:0,f:0,j:0,vol:0};
-    let best=null;
-    const maxT = Math.ceil(g/250);
-    for (let t=0;t<=maxT;t++){
-      const rem1 = Math.max(0,g-250*t);
-      const maxF = Math.ceil(rem1/5);
-      for (let f=0;f<=maxF;f++){
-        const rem2 = Math.max(0,rem1-5*f);
-        const j = Math.ceil(rem2/2.5 - 1e-9);
-        const cost = t*pt+f*p5+j*p25;
-        if (!best || cost<best.cost-1e-9) best={cost,t,f,j,vol:t*250+f*5+j*2.5};
-      }
-    }
-    return best;
+    const p5 = price[1];
+    if (g<=0) return {cost:0,f:0,vol:0};
+    const f = Math.ceil(g/5 - 1e-9);
+    return {cost:f*p5, f, vol:f*5};
   }
 
   function render(){
@@ -408,9 +400,7 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
       const pk = bestPack(g,P.price);
       tg+=g; tb+=bulk; tp+=pk.cost;
       const parts=[];
-      if (pk.t) parts.push(pk.t+" × 250 gal tote");
       if (pk.f) parts.push(pk.f+" × 5 gal");
-      if (pk.j) parts.push(pk.j+" × 2.5 gal");
       const left = pk.vol-g;
       body.insertAdjacentHTML("beforeend",
         "<tr><td>"+P.name+"</td><td class='n'>"+gal(g)+"</td><td class='n'>"+money(bulk)+"</td>"+
@@ -449,7 +439,7 @@ summary{cursor:pointer;font-family:"Barlow Condensed",sans-serif;font-weight:700
   $("printBtn").addEventListener("click",()=>window.print());
   $("fieldName").addEventListener("input",()=>{
     const n=$("fieldName").value.trim();
-    document.title = (n?n+" · ":"")+"NHS 2026 Season Program"; render();
+    document.title = (n?n+" · ":"")+"NHS 2027 Season Program"; render();
   });
 
   buildRateInputs();
